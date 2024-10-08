@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Greeting</title>
+</head>
+<body>
+    <h1>Tell us about yourself!</h1>
+    <form action="/greet" method="POST">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" placeholder="Your Name"><br><br>
+
+        <label for="age">Age:</label><br>
+        <input type="text" id="age" name="age" placeholder="Your Age"><br><br>
+
+        <label for="hobby">Favorite Hobby:</label><br>
+        <input type="text" id="hobby" name="hobby" placeholder="Your Hobby"><br><br>
+
+        <label for="color">Favorite Color:</label><br>
+        <input type="color" id="color" name="color"><br><br>
+
+        <label for="mood">How are you feeling today?</label><br>
+        <select id="mood" name="mood">
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="excited">Excited</option>
+            <option value="neutral">Neutral</option>
+        </select><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+
