@@ -1,5 +1,5 @@
 Flask==3.0.3
-gunicorn==23.0.0
+gunicorn==23.0.0  # Make sure this line is added
 numpy==1.26.0
 opencv-python==4.8.1.78
 packaging==24.1
