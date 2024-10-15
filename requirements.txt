@@ -1,0 +1,5 @@
+gunicorn==23.0.0
+numpy==1.26.0
+opencv-python==4.8.1.78
+packaging==24.1
+scipy==1.11.3
