@@ -15,12 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: /app  # Checkout to a specific folder
+          path: app  # Checkout to a specific folder
 
       - name: Install dependencies
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no your_user@${{ secrets.DEPLOY_IP }} << 'EOF'
-            cd /app  # Change this to your app directory
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_IP }} << 'EOF'
+            cd app  # Change this to your app directory
             python3 -m venv venv
             source venv/bin/activate
             pip install -r requirements.txt
