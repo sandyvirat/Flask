@@ -1,0 +1,39 @@
+name: CD Deploy to DigitalOcean VM
+
+# Trigger the workflow on push to the main branch (or another branch if desired)
+on:
+  push:
+    branches:
+      - main  # Adjust this to the branch you want to deploy from
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the latest code from the repository
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up SSH connection to DigitalOcean VM
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    # Step 3: Deploy to DigitalOcean VM
+    - name: Deploy to DigitalOcean
+      run: |
+        ssh -o StrictHostKeyChecking=no root@your_vm_ip << 'EOF'
+          cd ~/FlaskApp  # Navigate to your Flask app directory on the VM
+          git pull origin main  # Pull the latest changes from GitHub
+
+          # Activate the virtual environment
+          source venv/bin/activate
+
+          # Install any new dependencies
+          pip install -r requirements.txt
+
+          # Restart Gunicorn to apply the changes
+          sudo systemctl restart gunicorn
+        EOF
