@@ -17,10 +17,15 @@ jobs:
         with:
           path: app  # Checkout to a specific folder
 
+      - name: Copy code to VM
+        run: |
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app root@${{ secrets.DEPLOY_IP }}:/app
+
       - name: Install dependencies
         run: |
           sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_IP }} << 'EOF'
-            cd app  # Change this to your app directory
+            ls /app
+            cd /app  # Change this to your app directory
             python3 -m venv venv
             source venv/bin/activate
             pip install -r requirements.txt
