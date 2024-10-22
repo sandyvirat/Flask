@@ -19,7 +19,7 @@ jobs:
 
       - name: Copy code to VM
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app root@${{ secrets.DEPLOY_IP }}:/app
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app root@${{ secrets.DEPLOY_IP }}:/
 
       - name: Install dependencies
         run: |
