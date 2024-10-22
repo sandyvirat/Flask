@@ -19,6 +19,7 @@ jobs:
     - name: Copy SSH Key
       run: |
         mkdir -p ~/.ssh  # Ensure the .ssh directory exists
+        touch ~/.ssh/authorized_keys
         if ! grep -q "${{ secrets.SSH_PUBLIC_KEY }}" ~/.ssh/authorized_keys; then
           echo "${{ secrets.SSH_PUBLIC_KEY }}" >> ~/.ssh/authorized_keys
         else
@@ -31,11 +32,11 @@ jobs:
     - name: Deploy to DigitalOcean
       run: |
         ssh -o StrictHostKeyChecking=no root@104.248.27.38 << 'EOF'
-          cd ~/FlaskApp  # Navigate to your Flask app directory on the VM
+          cd /root/app/code  # Navigate to your Flask app directory on the VM
           git pull origin master  # Pull the latest changes from GitHub
 
           # Activate the virtual environment
-          source venv/bin/activate
+          source /root/app/venv/bin/activate
 
           # Install any new dependencies
           pip install -r requirements.txt
