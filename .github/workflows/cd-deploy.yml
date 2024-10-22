@@ -24,9 +24,9 @@ jobs:
     # Step 3: Deploy to DigitalOcean VM
     - name: Deploy to DigitalOcean
       run: |
-        ssh -o StrictHostKeyChecking=no root@your_vm_ip << 'EOF'
+        ssh -o StrictHostKeyChecking=no root@104.248.27.38<< 'EOF'
           cd ~/FlaskApp  # Navigate to your Flask app directory on the VM
-          git pull origin main  # Pull the latest changes from GitHub
+          git pull origin master  # Pull the latest changes from GitHub
 
           # Activate the virtual environment
           source venv/bin/activate
