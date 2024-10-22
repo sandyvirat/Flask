@@ -4,7 +4,7 @@ name: CD Deploy to DigitalOcean VM
 on:
   push:
     branches:
-      - main  # Adjust this to the branch you want to deploy from
+      - master  # Adjust this to the branch you want to deploy from
 
 jobs:
   deploy:
