@@ -1,0 +1,31 @@
+name: Deploy Python Application
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: /app  # Checkout to a specific folder
+
+      - name: Install dependencies
+        run: |
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no your_user@${{ secrets.DEPLOY_IP }} << 'EOF'
+            cd /app  # Change this to your app directory
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            # Kill existing Gunicorn processes
+            pkill gunicorn || true  # Use || true to ignore errors if no process is found
+            gunicorn app:app --bind 0.0.0.0:80 --daemon  # Change the port if needed
+            echo "Application is deployed...!"
+          EOF
