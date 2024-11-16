@@ -2,18 +2,25 @@ beautifulsoup4==4.12.3
 blinker==1.8.2
 click==8.1.7
 colorama==0.4.6
+dnspython==2.7.0
+exceptiongroup==1.2.2
 Flask==3.0.3
 Flask-SQLAlchemy==3.1.1
-gunicorn==23.0.0  # Ensure this line is included
 greenlet==3.0.3
+gunicorn==23.0.0
 iniconfig==2.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==2.1.5
+numpy==1.26.0
+opencv-python==4.8.1.78
 packaging==24.1
 pluggy==1.5.0
+pymongo==4.10.1
 pytest==8.3.3
+scipy==1.11.3
 soupsieve==2.6
 SQLAlchemy==2.0.31
+tomli==2.0.2
 typing_extensions==4.12.2
 Werkzeug==3.0.3
