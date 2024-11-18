@@ -31,6 +31,8 @@ jobs:
             pip install -r requirements.txt
             # Kill existing Gunicorn processes
             pkill gunicorn || true  # Use || true to ignore errors if no process is found
-            gunicorn app:app --bind 0.0.0.0:80 --daemon  # Change the port if needed
+            gunicorn app:app --bind 0.0.0.0:80 --daemon \
+            --error-logfile /var/log/gunicorn.error.log \
+            --access-logfile /var/log/gunicorn.access.log
             echo "Application is deployed...!"
           EOF
