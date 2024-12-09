@@ -19,11 +19,29 @@ jobs:
       - name: Bootstrap VM
         run: |
           sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ github.event.inputs.ip_address }} << 'EOF'
-            mkdir -p /app  # Ensure the /app directory is created
-            # Your bootstrap commands here
+            # Update package lists
             sudo apt-get update
-            sudo apt-get install -y python3-pip  # Ensure pip is installed
-            sudo apt-get install -y python3 python3-venv
-            # Any other setup commands you need
-            echo "Bootstrapping is done...!"
+
+            # Install Python and dependencies
+            sudo apt-get install -y python3 python3-venv python3-pip
+
+            # Install MongoDB
+            echo "Adding MongoDB repository..."
+            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org
+
+            # Start MongoDB service
+            echo "Starting MongoDB service..."
+            sudo systemctl start mongod
+            sudo systemctl enable mongod
+
+            # Confirm MongoDB installation
+            mongod --version
+
+            # Create /app directory for the Flask application
+            mkdir -p /app
+
+            echo "MongoDB and other dependencies installed successfully!"
           EOF

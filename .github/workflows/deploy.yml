@@ -19,11 +19,11 @@ jobs:
 
       - name: Copy code to VM
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app root@${{ secrets.DEPLOY_IP }}:/
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app sandyvirat9@${{ secrets.DEPLOY_IP }}:/
 
       - name: Install dependencies
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_IP }} << 'EOF'
+          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no sandyvirat9@${{ secrets.DEPLOY_IP }} << 'EOF'
             ls /app
             cd /app  # Change this to your app directory
             python3 -m venv venv
