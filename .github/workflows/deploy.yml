@@ -1,9 +1,6 @@
 name: Deploy Python Application
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
     branches:
       - master
@@ -11,27 +8,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           path: app  # Checkout to a specific folder
 
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
       - name: Copy code to VM
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./app sandyvirat9@${{ secrets.DEPLOY_IP }}:/
+          scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ secrets.DEPLOY_IP }}:/app
 
-      - name: Install dependencies
+      - name: Install dependencies and run Flask
         run: |
-          sshpass -p ${{ secrets.DEPLOY_PASSWORD }} ssh -o StrictHostKeyChecking=no sandyvirat9@${{ secrets.DEPLOY_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ secrets.DEPLOY_IP }} << 'EOF'
             ls /app
-            cd /app  # Change this to your app directory
+            cd /app
             python3 -m venv venv
             source venv/bin/activate
             pip install -r requirements.txt
-            # Kill existing Gunicorn processes
             pkill gunicorn || true  # Use || true to ignore errors if no process is found
-            gunicorn app:app --bind 0.0.0.0:80 --daemon \
+            gunicorn app:app --bind 0.0.0.0:5000 --daemon \
             --error-logfile /var/log/gunicorn.error.log \
             --access-logfile /var/log/gunicorn.access.log
             echo "Application is deployed...!"
