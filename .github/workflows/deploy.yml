@@ -18,31 +18,30 @@ jobs:
       - name: Set up SSH Agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Prepare VM
+      - name: Deploy to VM1
         run: |
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ secrets.DEPLOY_IP }} << 'EOF'
-            # Create /app directory with proper permissions
-            sudo mkdir -p /app
-            sudo chown -R sandyvirat9:sandyvirat9 /app
-          EOF
-
-      - name: Copy code to VM
-        run: |
-          scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ secrets.DEPLOY_IP }}:/app
-
-      - name: Install dependencies and run Flask
-        run: |
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ secrets.DEPLOY_IP }} << 'EOF'
-            ls /app
+          scp -o StrictHostKeyChecking=no -r ./app ubuntu@${{ vars.VM1_IP }}:/app
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.VM1_IP }} << 'EOF'
             cd /app
             python3 -m venv venv
             source venv/bin/activate
             pip install -r requirements.txt
-            pkill gunicorn || true  # Use || true to ignore errors if no process is found
-            gunicorn app:app --bind 0.0.0.0:5000 --daemon \
-            --error-logfile /var/log/gunicorn.error.log \
-            --access-logfile /var/log/gunicorn.access.log
-            echo "Application is deployed...!"
+            pkill gunicorn || true
+            gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            echo "Application deployed on VM1!"
+          EOF
+
+      - name: Deploy to VM2
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./app ubuntu@${{ vars.VM2_IP }}:/app
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.VM2_IP }} << 'EOF'
+            cd /app
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            pkill gunicorn || true
+            gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            echo "Application deployed on VM2!"
           EOF
