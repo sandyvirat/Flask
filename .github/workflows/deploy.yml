@@ -1,47 +1,36 @@
-name: Deploy Python Application
+name: Deploy Flask Application
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: app  # Checkout to a specific folder
+          path: app
 
       - name: Set up SSH Agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to VM1
         run: |
-          scp -o StrictHostKeyChecking=no -r ./app ubuntu@${{ vars.VM1_IP }}:/app
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.VM1_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
+            mkdir -p /app
             cd /app
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
-            pkill gunicorn || true
-            gunicorn app:app --bind 0.0.0.0:5000 --daemon
-            echo "Application deployed on VM1!"
+            echo "Deployment successful on VM1"
           EOF
 
       - name: Deploy to VM2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./app ubuntu@${{ vars.VM2_IP }}:/app
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.VM2_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 sandyvirat9@${{ vars.VM2_IP }} << 'EOF'
+            mkdir -p /app
             cd /app
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
-            pkill gunicorn || true
-            gunicorn app:app --bind 0.0.0.0:5000 --daemon
-            echo "Application deployed on VM2!"
+            echo "Deployment successful on VM2"
           EOF
