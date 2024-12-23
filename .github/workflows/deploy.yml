@@ -20,7 +20,7 @@ jobs:
       - name: Set up SSH Agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ vars.SSH_PRIVATE_KEY }}
 
       # Step 3: Deploy to VM1
       - name: Deploy to VM1
