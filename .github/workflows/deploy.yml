@@ -22,15 +22,18 @@ jobs:
         with:
           ssh-private-key: ${{ vars.SSH_PRIVATE_KEY }}
 
-      # Step 3: Deploy to VM1
-      - name: Deploy to VM1
+      # Step 3: Prepare VM1 for Deployment
+      - name: Prepare VM1
         run: |
-          # Ensure required packages are installed and permissions are correct
           ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
             sudo mkdir -p /app
             sudo chown -R sandyvirat9:sandyvirat9 /app
+            sudo chmod -R 755 /app
           EOF
 
+      # Step 4: Deploy Application to VM1
+      - name: Deploy to VM1
+        run: |
           # Copy application code to the VM
           scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM1_IP }}:/app
 
@@ -45,15 +48,18 @@ jobs:
             echo "Application deployed on VM1!"
           EOF
 
-      # Step 4: Deploy to VM2
-      - name: Deploy to VM2
+      # Step 5: Prepare VM2 for Deployment
+      - name: Prepare VM2
         run: |
-          # Ensure required packages are installed and permissions are correct
           ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM2_IP }} << 'EOF'
             sudo mkdir -p /app
             sudo chown -R sandyvirat9:sandyvirat9 /app
+            sudo chmod -R 755 /app
           EOF
 
+      # Step 6: Deploy Application to VM2
+      - name: Deploy to VM2
+        run: |
           # Copy application code to the VM
           scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM2_IP }}:/app
 
