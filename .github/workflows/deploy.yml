@@ -23,31 +23,29 @@ jobs:
           ssh-private-key: ${{ vars.SSH_PRIVATE_KEY }}
 
       # Step 3: Deploy to VM1
-      - name: Deploy to VM1
-        run: |
-          # Ensure the /app directory exists
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} "sudo mkdir -p /app && sudo chown -R sandyvirat9:sandyvirat9 /app"
-          
-          # Copy application code to the VM
-          scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM1_IP }}:/app
-          
-          # Connect to the VM and set up the Flask application
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
-            cd /app
+     - name: Deploy to VM1
+       run: |
+        # Ensure required packages are installed
+        ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
+        sudo apt update
+        sudo apt install -y python3-venv python3-pip  # Ensure python3-venv and pip are available
+        mkdir -p /app
+    EOF
 
-            # Create a Python virtual environment and install dependencies
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
+    # Copy application code to the VM
+    scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM1_IP }}:/app
 
-            # Stop existing Gunicorn process if running
-            pkill gunicorn || true
+    # Connect to the VM and set up the Flask application
+    ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
+      cd /app
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      pkill gunicorn || true
+      gunicorn app:app --bind 0.0.0.0:5000 --daemon
+      echo "Application deployed on VM1!"
+    EOF
 
-            # Start the Flask application
-            gunicorn app:app --bind 0.0.0.0:5000 --daemon
-
-            echo "Application deployed on VM1!"
-          EOF
 
       # Step 4: Deploy to VM2
       - name: Deploy to VM2
