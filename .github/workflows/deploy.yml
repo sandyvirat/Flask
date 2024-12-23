@@ -3,7 +3,7 @@ name: Deploy Flask Application
 on:
   push:
     branches:
-      - master
+      - master  # Trigger the deployment on pushes to the master branch
 
 jobs:
   deploy:
@@ -20,20 +20,21 @@ jobs:
       - name: Set up SSH Agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ vars.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ vars.SSH_PRIVATE_KEY }}  # SSH private key from GitHub secrets/variables
 
-      # Step 3: Prepare VM1 for Deployment
-      - name: Prepare VM1
-        run: |
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
-            sudo mkdir -p /app
-            sudo chown -R sandyvirat9:sandyvirat9 /app
-            sudo chmod -R 755 /app
-          EOF
-
-      # Step 4: Deploy Application to VM1
+      # Step 3: Deploy to VM1
       - name: Deploy to VM1
         run: |
+          echo "Starting deployment to VM1..."
+
+          # Ensure required packages are installed and permissions are correct
+          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM1_IP }} << 'EOF'
+            sudo apt update -y
+            sudo apt install -y python3-venv python3-pip
+            sudo mkdir -p /app
+            sudo chown -R sandyvirat9:sandyvirat9 /app
+          EOF
+
           # Copy application code to the VM
           scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM1_IP }}:/app
 
@@ -45,21 +46,22 @@ jobs:
             pip install -r requirements.txt
             pkill gunicorn || true
             gunicorn app:app --bind 0.0.0.0:5000 --daemon
-            echo "Application deployed on VM1!"
+            echo "Application deployed and running on VM1!"
           EOF
 
-      # Step 5: Prepare VM2 for Deployment
-      - name: Prepare VM2
-        run: |
-          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM2_IP }} << 'EOF'
-            sudo mkdir -p /app
-            sudo chown -R sandyvirat9:sandyvirat9 /app
-            sudo chmod -R 755 /app
-          EOF
-
-      # Step 6: Deploy Application to VM2
+      # Step 4: Deploy to VM2 (if needed)
       - name: Deploy to VM2
         run: |
+          echo "Starting deployment to VM2..."
+
+          # Ensure the /app directory exists and permissions are correct
+          ssh -o StrictHostKeyChecking=no sandyvirat9@${{ vars.VM2_IP }} << 'EOF'
+            sudo apt update -y
+            sudo apt install -y python3-venv python3-pip
+            sudo mkdir -p /app
+            sudo chown -R sandyvirat9:sandyvirat9 /app
+          EOF
+
           # Copy application code to the VM
           scp -o StrictHostKeyChecking=no -r ./app sandyvirat9@${{ vars.VM2_IP }}:/app
 
@@ -71,5 +73,5 @@ jobs:
             pip install -r requirements.txt
             pkill gunicorn || true
             gunicorn app:app --bind 0.0.0.0:5000 --daemon
-            echo "Application deployed on VM2!"
+            echo "Application deployed and running on VM2!"
           EOF
